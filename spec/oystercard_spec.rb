@@ -84,9 +84,9 @@ end
 
 it 'stores a journey' do
   subject.top_up(5)
-  subject.touch_in!(entry_station)
-  subject.touch_out!(exit_station)
-  expect(subject.journeys).to include @journeys
+  subject.touch_in!('victoria')
+  subject.touch_out!('green park')
+  expect(subject.journeys).not_to be_empty
 end
 end
 end
