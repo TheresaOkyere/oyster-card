@@ -52,8 +52,10 @@ it 'allows user to touch in' do
 end
 
 it 'will not touch in if below minimum balance' do
-  expect{ subject.touch_in }.to raise_error "Insufficient balance"
-end
+  minimum_balance = Oystercard::MINIMUM_BALANCE
+  subject.top_up(minimum_balance)
+  subject.deduct(1)
+  expect{subject.touch_in }.to raise_error 'not enough money'
 end
 
 describe '#touch_out' do
@@ -69,4 +71,4 @@ end
 
 
 end
-
+end
