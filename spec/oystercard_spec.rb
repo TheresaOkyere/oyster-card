@@ -66,6 +66,7 @@ it 'allows the user to touch out' do
   subject.touch_in
   subject.touch_out
   expect(subject).not_to be_in_journey
+expect{ subject.touch_out }.to change{ subject.balance }.by(-Oystercard::MINIMUM_FARE)
 end
 end
 
