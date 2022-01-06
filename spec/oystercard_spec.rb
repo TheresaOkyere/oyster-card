@@ -1,6 +1,7 @@
 require 'oystercard'
 
 describe Oystercard do
+  let(:station){ double :station }
 
   it 'balance starts with zero' do
     expect(subject.balance).to eq 0
@@ -22,17 +23,13 @@ it 'has a balance limit' do
   expect{ subject.top_up 1 }.to raise_error 'You have reached your balance limit'
 end
 
- it 'deduct fare from balance' do
-  subject.top_up(21)
-  expect{subject.deduct 3 }.to change{subject.balance}.by -3
- end
 
 describe '#in_journey' do
 it { is_expected.to respond_to(:in_journey?) }
 
 it 'checks if user had touch in' do
   subject.top_up(5)
-  subject.touch_in
+  subject.touch_in(station)
   expect(subject.in_journey?).to eq true
 end
 
@@ -47,15 +44,18 @@ it {is_expected.to respond_to(:touch_in)}
 
 it 'allows user to touch in' do
   subject.top_up(5)
-  subject.touch_in
+  subject.touch_in(station)
   expect(subject).to be_in_journey
 end
 
 it 'will not touch in if below minimum balance' do
-  minimum_balance = Oystercard::MINIMUM_BALANCE
-  subject.top_up(minimum_balance)
-  subject.deduct(1)
-  expect{subject.touch_in }.to raise_error 'not enough money'
+  expect{subject.touch_in(station) }.to raise_error 'not enough money'
+end
+
+it ' allows the user to remember entry station ' do
+  subject.top_up(5)
+  subject.touch_in(station)
+  expect(subject.entry_station).to eq station
 end
 
 describe '#touch_out' do
@@ -63,7 +63,7 @@ it {is_expected.to respond_to(:touch_out)}
 
 it 'allows the user to touch out' do
   subject.top_up(5)
-  subject.touch_in
+  subject.touch_in(station)
   subject.touch_out
   expect(subject).not_to be_in_journey
 expect{ subject.touch_out }.to change{ subject.balance }.by(-Oystercard::MINIMUM_FARE)
@@ -73,3 +73,4 @@ end
 
 end
 end
+
